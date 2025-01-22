@@ -31,8 +31,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
          http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize.requestMatchers("/home/**","/register/**","/authenticate").permitAll()
+                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
-                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
+//                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                  .csrf(csrf->csrf.disable())
                  .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class); // call jwt before the UsernamePasswordAuthenticationFilter
          return http.build();

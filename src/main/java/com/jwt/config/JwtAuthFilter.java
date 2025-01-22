@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -34,9 +35,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(authHeader).getBody(); // get the payload from the body
 
                 String username = String.valueOf(claims.get("username"));
-                String authorities = String.valueOf(claims.get("authorities"));
-
-                List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
+                String roles = String.valueOf(claims.get("role"));
+                List<GrantedAuthority> grantedAuthorities = List.of(new SimpleGrantedAuthority(roles));
                 Authentication auth = new UsernamePasswordAuthenticationToken(username, null, grantedAuthorities);
                 SecurityContextHolder.getContext().setAuthentication(auth); // set the user as logged in
             }

@@ -65,10 +65,14 @@ public class HomeController {
     public String authenticate(@RequestBody LoginForm loginForm){
         String username = loginForm.getUsername();
         String password = loginForm.getPassword();
+//        String role = loginForm.getRoles().getRole();
+        UserDetails userDetails =userDetailsService.loadUserByUsername(username);
+        if (!bCryptPasswordEncoder.matches(password, userDetails.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
         Authentication authentication = Authenticate(username,password); // authenticate user details from database
         SecurityContextHolder.getContext().setAuthentication(authentication); // set the user as logged in.
 
-        UserDetails userDetails =userDetailsService.loadUserByUsername(username);
         return jwtService.generateToken(userDetails); // generate the jwt token
 
 
